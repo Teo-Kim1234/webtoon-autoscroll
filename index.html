@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹툰 자동 스크롤러 - 플로팅 컨트롤러 시뮬레이터 & 개발 툴</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="logo">
+                <i class="fa-solid fa-scroll-torah logo-icon"></i>
+                <div class="logo-text">
+                    <h1>Webtoon Scroller</h1>
+                    <span>Floating Overlay Controller</span>
+                </div>
+            </div>
+            <div class="header-badges">
+                <span class="badge active-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> 대화형 시뮬레이터</span>
+                <span class="badge native-badge"><i class="fa-brand fa-android"></i> 안드로이드 네이티브 스펙</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace Split -->
+        <main class="workspace">
+            
+            <!-- LEFT: Smartphone Simulator -->
+            <section class="simulator-section">
+                <div class="simulator-wrapper">
+                    <!-- Glow decoration behind phone -->
+                    <div class="phone-glow"></div>
+                    
+                    <!-- Smartphone Frame -->
+                    <div class="smartphone">
+                        <div class="screen-bezel"></div>
+                        <div class="dynamic-island">
+                            <div class="camera-lens"></div>
+                            <div class="sensor"></div>
+                        </div>
+                        
+                        <!-- Phone Screen Area -->
+                        <div class="phone-screen" id="phoneScreen">
+                            
+                            <!-- Phone Status Bar -->
+                            <div class="phone-status-bar">
+                                <span class="status-time" id="statusTime">18:40</span>
+                                <div class="status-icons">
+                                    <i class="fa-solid fa-signal"></i>
+                                    <span class="status-network">5G</span>
+                                    <i class="fa-solid fa-battery-three-quarters"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Floating Draggable Widget Overlay -->
+                            <div class="floating-widget" id="floatingWidget">
+                                <!-- Drag Handle (Top Bar) -->
+                                <div class="widget-drag-handle" id="widgetDragHandle">
+                                    <div class="drag-bar-line"></div>
+                                </div>
+                                
+                                <!-- Main Widget Contents -->
+                                <div class="widget-content">
+                                    <div class="widget-left-controls">
+                                        <!-- Play/Pause Button -->
+                                        <button class="widget-btn play-btn" id="playBtn" title="자동 스크롤 시작/일시정지">
+                                            <i class="fa-solid fa-play"></i>
+                                        </button>
+                                        
+                                        <!-- Size Scaling Button -->
+                                        <button class="widget-btn size-btn" id="widgetSizeBtn" title="크기 변경 (0.8x -> 1.0x -> 1.2x)" style="margin-left: 4px; font-size: 0.65rem; font-weight: 800; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; outline: none; transition: all 0.2s;">1.0x</button>
+                                        
+                                        <!-- Speed Indicator & Label -->
+                                        <div class="speed-indicator" style="margin-left: 4px;">
+                                            <span class="speed-val" id="speedVal">1.5x</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Collapsible Side Slider Panel -->
+                                    <div class="widget-slider-panel" id="widgetSliderPanel">
+                                        <div class="slider-header">
+                                            <span>스크롤 속도 조절</span>
+                                        </div>
+                                        <div class="slider-wrapper">
+                                            <i class="fa-solid fa-gauge-simple-high speed-icon-min"></i>
+                                            <input type="range" id="scrollSpeed" min="0.2" max="5" step="0.1" value="1.5" class="speed-slider">
+                                            <i class="fa-solid fa-bolt speed-icon-max"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right Sidebar Expand/Toggle Widget Button -->
+                                    <button class="widget-btn toggle-panel-btn" id="togglePanelBtn" title="패널 열기/닫기">
+                                        <i class="fa-solid fa-chevron-left" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Mock Webtoon App Main Frame -->
+                            <div class="webtoon-app-frame" id="webtoonAppFrame">
+                                <!-- Webtoon App Navigation Header -->
+                                <div class="webtoon-app-header">
+                                    <button class="app-back-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <div class="webtoon-app-title" id="webtoonAppTitle">네오툰 - 신작 웹툰</div>
+                                    <button class="app-menu-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </div>
+
+                                <!-- Webtoon Viewer (Auto Scroll Container) -->
+                                <div class="webtoon-viewer" id="webtoonViewer">
+                                    <!-- Interactive contents will be dynamically rendered here via JS -->
+                                    <div class="webtoon-loading">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                        <p>웹툰을 불러오는 중...</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Webtoon Bottom Control Bar -->
+                                <div class="webtoon-bottom-bar">
+                                    <div class="bottom-bar-item active">
+                                        <i class="fa-solid fa-book-open"></i>
+                                        <span>웹툰 보기</span>
+                                    </div>
+                                    <div class="bottom-bar-item" id="resetScrollBtn">
+                                        <i class="fa-solid fa-arrow-up-to-line"></i>
+                                        <span>맨 위로</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phone Navigation Bar -->
+                            <div class="phone-nav-bar">
+                                <div class="nav-key back-key"><i class="fa-solid fa-chevron-left"></i></div>
+                                <div class="nav-key home-key"></div>
+                                <div class="nav-key recents-key"><i class="fa-solid fa-square"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT: Configs & Native Android Code Generator -->
+            <section class="control-section">
+                <!-- Tab Controls -->
+                <div class="control-tabs">
+                    <button class="tab-btn active" data-tab="simulator-ctrl">
+                        <i class="fa-solid fa-sliders"></i> 시뮬레이터 조작
+                    </button>
+                    <button class="tab-btn" data-tab="android-code">
+                        <i class="fa-brands fa-android"></i> 안드로이드 구현 코드
+                    </button>
+                    <button class="tab-btn" data-tab="download-center">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> 앱 다운로드 센터
+                    </button>
+                </div>
+
+                <!-- Tab Content 1: Simulator Controls -->
+                <div class="tab-content active" id="simulator-ctrl">
+                    </div>
+
+                    <!-- Simulator Live Settings -->
+                    <div class="control-card">
+                        <h3><i class="fa-solid fa-gears"></i> 플로팅 위젯 스타일 커스텀</h3>
+                        <p class="card-desc">가상 플로팅 컨트롤러의 디자인과 상태를 실시간으로 조작해 보세요.</p>
+                        
+                        <div class="setting-group">
+                            <label>위젯 불투명도 (Glassmorphism)</label>
+                            <div class="setting-row">
+                                <input type="range" id="widgetOpacity" min="30" max="100" value="85" class="custom-slider">
+                                <span class="setting-value" id="opacityVal">85%</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>위젯 네온 테마 색상</label>
+                            <div class="color-picker-grid">
+                                <button class="color-picker-btn active" data-color="#3b82f6" style="background-color: #3b82f6;"></button>
+                                <button class="color-picker-btn" data-color="#ec4899" style="background-color: #ec4899;"></button>
+                                <button class="color-picker-btn" data-color="#10b981" style="background-color: #10b981;"></button>
+                                <button class="color-picker-btn" data-color="#8b5cf6" style="background-color: #8b5cf6;"></button>
+                                <button class="color-picker-btn" data-color="#f59e0b" style="background-color: #f59e0b;"></button>
+                                <button class="color-picker-btn" data-color="#ef4444" style="background-color: #ef4444;"></button>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <div class="flex-row">
+                                <label>위젯 위치 초기화</label>
+                                <button class="action-btn secondary-btn" id="btnResetWidget"><i class="fa-solid fa-arrows-to-dot"></i> 중앙 정렬</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How to test instructions -->
+                    <div class="control-card info-card">
+                        <h4>💡 시뮬레이터 조작 방법</h4>
+                        <ul>
+                            <li><strong>드래그 기능:</strong> 폰 화면 중앙의 플로팅 위젯의 윗부분(드래그 핸들)을 잡고 마우스나 터치로 끌면 폰 화면 어디든 자유롭게 위치를 옮길 수 있습니다.</li>
+                            <li><strong>자동 스크롤 시작:</strong> <i class="fa-solid fa-play"></i> 재생 버튼을 누르면 웹툰이 아래로 부드럽게 스크롤됩니다.</li>
+                            <li><strong>속도 실시간 조절:</strong> 오른쪽 화살표 버튼(<i class="fa-solid fa-chevron-left"></i>)을 누르면 속도 슬라이더가 튀어나오며, 슬라이더를 옮기면 스크롤되는 속도가 실시간으로 빨라지거나 느려집니다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab Content 2: Android Native Code -->
+                <div class="tab-content" id="android-code">
+                    <div class="control-card">
+                        <div class="card-header-with-action">
+                            <h3><i class="fa-brands fa-android"></i> 안드로이드 네이티브 코틀린 소스</h3>
+                            <div class="code-selector">
+                                <select id="codeFileSelect" class="custom-select">
+                                    <option value="floating">FloatingService.kt (오버레이 뷰)</option>
+                                    <option value="accessibility">ScrollService.kt (제스처 자동스크롤)</option>
+                                    <option value="main">MainActivity.kt (권한 요청)</option>
+                                    <option value="manifest">AndroidManifest.xml (설정)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="card-desc">실제 내 스마트폰에서 네이버 웹툰, 카카오 웹툰 등을 켜놓고 자동으로 스크롤해주는 백그라운드 플로팅 위젯 앱을 만들 때 사용하는 실제 Kotlin 코드입니다.</p>
+                        
+                        <!-- Code Block Display -->
+                        <div class="code-container">
+                            <button class="copy-code-btn" id="copyCodeBtn" title="코드 복사">
+                                <i class="fa-regular fa-copy"></i> 복사하기
+                            </button>
+                            <pre><code class="language-kotlin" id="codeDisplay">Loading code...</code></pre>
+                        </div>
+                        
+                        <div class="sdk-info-grid">
+                            <div class="sdk-card">
+                                <h5>안드로이드 API</h5>
+                                <p>API 26 (Android 8.0) 이상 지원</p>
+                            </div>
+                            <div class="sdk-card">
+                                <h5>필수 시스템 권한</h5>
+                                <p>다른 앱 위에 그리기 & 접근성 서비스 권한</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 3: Download Center -->
+                <div class="tab-content" id="download-center">
+                    <!-- Chrome Extension Download Card -->
+                    <div class="control-card">
+                        <h3><i class="fa-brands fa-chrome" style="color: #4285f4; margin-right: 5px;"></i> 1. PC & 모바일 브라우저용 확장 프로그램</h3>
+                        <p class="card-desc">아래의 다운로드 버튼을 클릭하면 크롬 확장 프로그램 완제품 설치 파일이 즉시 내 컴퓨터에 저장됩니다!</p>
+                        
+                        <div style="margin-top: 15px; margin-bottom: 15px; text-align: center;">
+                            <a href="webtoon-scroller-extension.zip" download="webtoon-scroller-extension.zip" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border-radius: 14px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; text-decoration: none; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);">
+                                <i class="fa-solid fa-file-zipper" style="font-size: 1.1rem;"></i> 크롬 확장 프로그램 설치 패키지 다운로드 (ZIP)
+                            </a>
+                        </div>
+
+                        <div class="info-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 0.8rem; line-height: 1.5;">
+                            <h5 style="margin-bottom: 5px; color: #ffffff;"><i class="fa-solid fa-circle-info"></i> 설치 및 실행 1초 매뉴얼</h5>
+                            <ol style="margin-left: 15px; color: #94a3b8;">
+                                <li>다운로드한 ZIP 파일의 압축을 풀어줍니다.</li>
+                                <li>크롬 브라우저에서 주소창에 <code style="color: #60a5fa;">chrome://extensions</code> 입력 후 이동</li>
+                                <li>우측 상단 <strong>[개발자 모드]</strong> 스위치를 켭니다.</li>
+                                <li>좌측 상단 <strong>[압축해제된 확장 프로그램을 로드]</strong> 버튼을 클릭합니다.</li>
+                                <li>압축을 푼 폴더를 선택하면 즉시 설치 끝!</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Android App Download Card -->
+                    <div class="control-card">
+                        <h3><i class="fa-brands fa-android" style="color: #10b981; margin-right: 5px;"></i> 2. 안드로이드 모바일 공식 앱용 자동 스크롤러</h3>
+                        <p class="card-desc">네이버웹툰 앱 위에서 오버레이로 바로 실행 가능한 Kotlin 네이티브 앱 소스입니다.</p>
+                        
+                        <div style="margin-top: 15px; margin-bottom: 15px; text-align: center;">
+                            <a href="webtoon-scroller-android.zip" download="webtoon-scroller-android.zip" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border-radius: 14px; background: linear-gradient(135deg, #10b981, #065f46); color: white; text-decoration: none; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);">
+                                <i class="fa-solid fa-file-zipper" style="font-size: 1.1rem;"></i> 안드로이드 앱 개발 소스 패키지 다운로드 (ZIP)
+                            </a>
+                        </div>
+
+                        <div class="info-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 0.8rem; line-height: 1.5;">
+                            <h5 style="margin-bottom: 5px; color: #ffffff;"><i class="fa-solid fa-play"></i> 폰에 집어넣는 빌드 매뉴얼</h5>
+                            <ol style="margin-left: 15px; color: #94a3b8;">
+                                <li>다운로드한 ZIP 파일의 압축을 풀어줍니다.</li>
+                                <li><strong>Android Studio</strong>를 실행하고 [Open]을 누릅니다.</li>
+                                <li>압축을 푼 폴더를 엽니다.</li>
+                                <li>스마트폰을 PC에 연결하고, 상단의 **실행(▶)**을 누르면 APK 빌드 후 폰에 자동 설치됩니다!</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">코드가 클립보드에 복사되었습니다!</div>
+    </div>
+
+    <!-- Script File -->
+    <script src="app.js"></script>
+</body>
+</html>
