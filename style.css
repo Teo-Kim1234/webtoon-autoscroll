@@ -365,6 +365,13 @@ body {
     width: 250px;
 }
 
+/* Hide extra controls when collapsed to prevent clipping and reveal the toggle arrow */
+.floating-widget:not(.expanded) .size-btn,
+.floating-widget:not(.expanded) .speed-indicator {
+    display: none !important;
+}
+
+
 /* Sizing scale styles for simulator */
 .floating-widget.scale-sm {
     transform: translate(-50%, -50%) scale(0.8) !important;
